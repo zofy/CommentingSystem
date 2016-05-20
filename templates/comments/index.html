@@ -17,7 +17,7 @@
             {% for c in comment_tree %}
                 <li id="{{ c.id }}" class="c" style="margin-left:{{ c.depth|add:c.depth }}em;">
                     <p class="poster">Anonymous - {{ c.date }}</p>
-        {#            {{ c.date|naturaltime }}#}
+{#                    {{ c.date|naturaltime }}#}
                     {% if c.visible %}
                         <p>{{ c.content }}</p>
                     {% else %}

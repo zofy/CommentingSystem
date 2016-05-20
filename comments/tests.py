@@ -32,8 +32,15 @@ class CommentTestCase(TestCase):
 
     def test_sort_comments(self):
         self.test_generate_comments()
-        l = sort_comments2(0, 0, 10)[0]
-        print len(l)
-        for c in l[:10]:
+        l = sort_comments2(0, 0)
+        idx = l[1]
+        print idx
+        print len(l[0])
+        for c in l[0][:10]:
             print c
-        # print(l[-1])
+        # m = sort_comments2(0, idx + 1)
+        # print len(m[0])
+        # for c in m[0]:
+        #     print c
+        # print l[1]
+        # print(l[1])
