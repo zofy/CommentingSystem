@@ -1,3 +1,7 @@
+import json
+
+from django.core import serializers
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 
 from comments.models import Comment
@@ -5,9 +9,31 @@ from comments.models import Comment
 
 def home(request):
     context = dict()
-    comment_tree = sort_comments2(request, 0)[0]
-    context['comment_tree'] = comment_tree[:10]
+    request.session['idx'] = 0
+    comment_tree, new_idx = sort_comments2(request)
+    context['comment_tree'] = comment_tree[:5]
+    request.session['result'] = serializers.serialize('json', comment_tree)
+    request.session['idx'] = new_idx
+    request.session['page'] = 0
     return render(request, 'comments/index.html', context)
+
+
+def list_comments(request):
+    if request.method == 'GET':
+        return JsonResponse({'comments': request.session['result']})
+    if request.POST['move'] == 'next':
+        request.session['page'] += 1
+        page = request.session['page']
+        if len(request.session['result']) < page*5 + 5:
+            request.session['idx'] += 1
+            new_comments, new_idx = sort_comments2(request)
+            request.session['result'] += new_comments
+            request.session['idx'] = new_idx
+    elif request.POST['move'] == 'previous':
+        request.session['page'] -= 1
+        page = request.session['page']
+    # return JsonResponse({'comments': request.session['result'][page*5: page*5 + 5]})
+    return JsonResponse({'comments': request.session['result']})
 
 
 def sort_comments():
@@ -32,7 +58,8 @@ def sort_comments():
     return result
 
 
-def sort_comments2(request, idx):
+def sort_comments2(request):
+    idx = request.session['idx']
     result = Comment.objects.filter(depth=0).order_by('-_lower_bound')
     r = []
     idx = rec(result[idx:], r)
@@ -49,5 +76,5 @@ def rec(list, result):
         path = c.path
         l = Comment.objects.filter(depth=d + 1, path__startswith=path).order_by('-_lower_bound')
         rec(l, result)
-        if c.depth == 0 and len(result) >= 10:
+        if c.depth == 0 and len(result) >= 5:
             return i

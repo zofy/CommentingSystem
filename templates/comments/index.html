@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     {% load staticfiles %}
-    <link rel="stylesheet" href="{% static 'comments/index.css' %}"/>
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'comments/index.css' %}"/>
     <script src="{% static 'jquery-2.2.1.min.js' %}"></script>
     <title>ShowPage</title>
 </head>
 <body>
+    {% csrf_token %}
     <h1>Commenting System</h1>
     <div class="container">
         <ul id="commenters">

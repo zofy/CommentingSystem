@@ -5,4 +5,5 @@ from . import views
 app_name = 'comment'
 urlpatterns = [
     url(r'^$', views.home, name='home'),
+    url(r'^listComments/$', views.list_comments, name='list_comment'),
 ]

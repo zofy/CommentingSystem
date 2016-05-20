@@ -1,6 +1,6 @@
 a {
     font-weight: bold;
-    color: #ff982c;
+    color: #499bcf;
     text-decoration: none;
 }
 
@@ -48,6 +48,7 @@ a:hover {
 
 .container{
     margin: 30px auto;
+    width: 30%;
 }
 
 .listing{
