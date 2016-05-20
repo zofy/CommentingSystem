@@ -1,0 +1,39 @@
+{#{% load humanize %}#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'comments/index.css' %}"/>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="{% static 'jquery-2.2.1.min.js' %}"></script>
+    <title>ShowPage</title>
+</head>
+<body>
+    <h1>Commenting System</h1>
+    <div class="container">
+        <ul id="commenters">
+            {% for c in comment_tree %}
+                <li id="{{ c.id }}" class="c" style="margin-left:{{ c.depth|add:c.depth }}em;">
+                    <p class="poster">Anonymous - {{ c.date }}</p>
+        {#            {{ c.date|naturaltime }}#}
+                    {% if c.visible %}
+                        <p>{{ c.content }}</p>
+                    {% else %}
+                        <p>This comment has been hidden</p>
+                    {% endif %}
+                    <p><i class="fa fa-plus" aria-hidden="true"></i> <i class="fa fa-minus" aria-hidden="true"></i> <a href="" class="reply">reply</a></p>
+                </li>
+            {% empty %}
+                <li>There are currently no comments. You can be first!</li>
+            {% endfor %}
+        </ul>
+        <div class="container listing">
+            <p id="prev">Previous</p>
+            <p id="next">Next</p>
+        </div>
+    </div>
+<script type="text/javascript" src="{% static 'comments/index.js' %}"></script>
+</body>
+</html>
