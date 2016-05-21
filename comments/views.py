@@ -17,35 +17,41 @@ def home(request):
     # request.session['result'] = serializers.serialize('json', comment_tree,
     #                                                   fields=('path', 'depth', 'content', 'visible'))
     request.session['result'] = pickle.dumps(comment_tree)
-    request.session['idx'] = new_idx
+    request.session['idx'] += new_idx
     request.session['page'] = 0
+    request.session.set_expiry(0)
     return render(request, 'comments/index.html', context)
 
 
 def list_comments(request):
     context = dict()
-    data = pickle.loads(request.session['result']) + ['gugug']
-    # context['comments'] = [(d.path, d.depth) for d in data]
-    context['comments'] = [data[-1]]
+    comment_list = pickle.loads(request.session['result'])
 
     if request.method == 'GET':
-        data = pickle.loads(request.session['result'])[:2]
+        data = pickle.loads(request.session['result'])[5:10]
         context['comments'] = [(d.path, d.depth) for d in data]
         return JsonResponse(context)
 
-    if request.POST['move'] == 'next':
-        request.session['page'] += 1
+    if request.method == 'POST':
+        if request.POST['move'] == 'next':
+            request.session['page'] += 1
+
+            if not request.session.get('idx'):
+                    context['comments'] = [(c.path, c.lower_bound, c.depth, c.visible, c.content, c.date) for c in
+                                           comment_list[len(comment_list) - len(comment_list) % 5:]]
+                    return JsonResponse(context)
+
+            if len(comment_list) < request.session['page'] * 5 + 5:
+                request.session['idx'] += 1
+                new_comments, new_idx = sort_comments2(request)
+                comment_list += new_comments
+                request.session['result'] = pickle.dumps(comment_list)
+                request.session['idx'] = new_idx
+        elif request.POST['move'] == 'previous':
+            request.session['page'] -= 1
         page = request.session['page']
-        if len(request.session['result']) < page * 5 + 5:
-            request.session['idx'] += 1
-            new_comments, new_idx = sort_comments2(request)
-            request.session['result'] += new_comments
-            request.session['idx'] = new_idx
-    elif request.POST['move'] == 'previous':
-        request.session['page'] -= 1
-        page = request.session['page']
-        # return JsonResponse({'comments': request.session['result'][page*5: page*5 + 5]})
-        context['comments'] = simplejson.loads(request.session['result'])[page * 5: page * 5 + 5]
+        context['comments'] = [(c.path, c.lower_bound, c.depth, c.visible, c.content, c.date) for c in
+                               comment_list[page * 5: page * 5 + 5]]
     return JsonResponse(context)
 
 
