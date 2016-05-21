@@ -12,7 +12,7 @@
             alert('efefef');
         });
     };
-
+var a;
     comments.nextAjax = function(){
         comments.idx ++;
         $.ajax({
@@ -20,11 +20,14 @@
                 url: '/listComments/',
                 data: {'move': 'next', 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()},
                 success: function(json){
+                    console.log('comments' in json);
                     // refresh comments on page
-                    //$.each(json.comments, function(comment){
-                    //    console.log(comment);
-                    //});
-                    console.log(json.comments);
+                    for(var i = 0; i < json.comments.length; i++){
+                        a = json.comments;
+                        //console.log(a);
+                        console.log(json.comments[i]);
+                    }
+                    //console.log(json.comments);
                 },
                 dataType: 'json'
             });

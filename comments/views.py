@@ -1,5 +1,7 @@
 import json
+import pickle
 
+import simplejson
 from django.core import serializers
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
@@ -12,19 +14,29 @@ def home(request):
     request.session['idx'] = 0
     comment_tree, new_idx = sort_comments2(request)
     context['comment_tree'] = comment_tree[:5]
-    request.session['result'] = serializers.serialize('json', comment_tree)
+    # request.session['result'] = serializers.serialize('json', comment_tree,
+    #                                                   fields=('path', 'depth', 'content', 'visible'))
+    request.session['result'] = pickle.dumps(comment_tree)
     request.session['idx'] = new_idx
     request.session['page'] = 0
     return render(request, 'comments/index.html', context)
 
 
 def list_comments(request):
+    context = dict()
+    data = pickle.loads(request.session['result']) + ['gugug']
+    # context['comments'] = [(d.path, d.depth) for d in data]
+    context['comments'] = [data[-1]]
+
     if request.method == 'GET':
-        return JsonResponse({'comments': request.session['result']})
+        data = pickle.loads(request.session['result'])[:2]
+        context['comments'] = [(d.path, d.depth) for d in data]
+        return JsonResponse(context)
+
     if request.POST['move'] == 'next':
         request.session['page'] += 1
         page = request.session['page']
-        if len(request.session['result']) < page*5 + 5:
+        if len(request.session['result']) < page * 5 + 5:
             request.session['idx'] += 1
             new_comments, new_idx = sort_comments2(request)
             request.session['result'] += new_comments
@@ -32,8 +44,9 @@ def list_comments(request):
     elif request.POST['move'] == 'previous':
         request.session['page'] -= 1
         page = request.session['page']
-    # return JsonResponse({'comments': request.session['result'][page*5: page*5 + 5]})
-    return JsonResponse({'comments': request.session['result']})
+        # return JsonResponse({'comments': request.session['result'][page*5: page*5 + 5]})
+        context['comments'] = simplejson.loads(request.session['result'])[page * 5: page * 5 + 5]
+    return JsonResponse(context)
 
 
 def sort_comments():
