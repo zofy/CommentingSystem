@@ -29,9 +29,6 @@
                     // refresh comments on page
                     if('comments' in json) {
                         comments.refreshComments(json.comments);
-                        //for (var i = 0; i < json.comments.length; i++) {
-                        //    console.log(json.comments[i]);
-                        //}
                     }
                 },
                 dataType: 'json'
@@ -46,7 +43,8 @@
             var content = listOfComments[i][4];
             var date = listOfComments[i][5];
             var depth = listOfComments[i][2];
-            html = '<li class="c" style="margin-left:' + depth + 'em;">' +
+            var idComment = listOfComments[i][6];
+            html = '<li id="' + idComment + '" class="c" style="margin-left:' + depth + 'em;">' +
                 '<p class="poster">Anonymous - ' + date + '</p>' +
                 '<p>' + content + '</p>' +
                 '<p><i class="fa fa-plus" aria-hidden="true"></i> <i class="fa fa-minus" aria-hidden="true"></i> <a class="reply">reply</a></p>' +
@@ -57,4 +55,17 @@
         }
     }
 
+
+    comments.vote = function(id, vote){
+        $.ajax({
+                type: 'POST',
+                url: '/rateComment/',
+                data: {'id': id, 'vote': vote, 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()},
+                success: function(json){
+                    // rates comment
+                    console.log('You voted!');
+                },
+                dataType: 'json'
+        });
+    }
 comments.setUp();

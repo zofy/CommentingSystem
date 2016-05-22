@@ -15,16 +15,18 @@ class CommentTestCase(TestCase):
         c.save()
         result = [c]
         for i in xrange(1, 10000):
-            idx = randint(0, len(result))
+            ch = randint(0, 1)
             lb = round(random(), 2)
-            if idx > len(result) - 1:
-                c = Comment(depth=0, _lower_bound=lb)
-                c.path = str(i)
-                c.save()
-            else:
-                c = Comment(_lower_bound=lb)
+            c = Comment(_lower_bound=lb, visible=random() > 0.2)
+            if ch == 0:
+                idx = randint(0, len(result) - 1)
                 c.path = result[idx].path + ' ' + str(i)
                 c.depth = result[idx].depth + 1
+                c.parent = result[idx].id
+                c.save()
+            else:
+                c.depth = 0
+                c.path = str(i)
                 c.save()
             result.append(c)
             # return result
@@ -32,13 +34,7 @@ class CommentTestCase(TestCase):
 
     def test_sort_comments(self):
         self.test_generate_comments()
-        l = sort_comments2(0, 0)
-        idx = l[1]
-        print idx
-        print len(l[0])
-        for c in l[0]:
-            print c
-        l = sort_comments2(0, idx + 1)
-        print len(l[0])
-        for c in l[0]:
+        l = sort_comments2(0, 20)
+        print len(l)
+        for c in l[:10]:
             print c

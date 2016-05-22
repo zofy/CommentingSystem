@@ -10,6 +10,7 @@ class Comment(models.Model):
     visible = models.BooleanField(default=True)
     depth = models.PositiveIntegerField(default=0)
     path = models.TextField(null=True)
+    parent = models.IntegerField(default=-1)
 
     @property
     def lower_bound(self):
@@ -25,7 +26,7 @@ class Comment(models.Model):
 
     @up_votes.setter
     def up_votes(self, value):
-        self._up_votes += value
+        self._up_votes += 1
 
     @property
     def down_votes(self):
@@ -33,13 +34,7 @@ class Comment(models.Model):
 
     @down_votes.setter
     def down_votes(self, value):
-        self._down_votes += value
-
-    def plus_vote(self):
-        self.up_votes += 1
-
-    def minus_vote(self):
-        self.down_votes += 1
+        self._down_votes += 1
 
     def set_lower_bound(self):
         n = self.up_votes + self.down_votes
