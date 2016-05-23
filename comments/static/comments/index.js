@@ -12,6 +12,15 @@
             console.log('You clicked previous');
             comments.listComments('previous');
         });
+        $('#commenters').on('click', '.fa', function(event){
+            var id  = $(this).parent().parent().attr('id');
+            if('fa-plus' in $(this).classList){
+                var vote = 'plus';
+            }else if('fa-minus' in $(this).classList) {
+                var vote = 'minus';
+            }
+            comments.vote(id, vote);
+        });
     };
 
 
@@ -40,7 +49,11 @@
         $('#commenters').html('');
         var html = '';
         for(var i = 0; i < listOfComments.length; i++){
-            var content = listOfComments[i][4];
+            if(listOfComments[i][7] === 'True') {
+                var content = listOfComments[i][4];
+            }else{
+                var content = 'This comment has been hidden!';
+            }
             var date = listOfComments[i][5];
             var depth = listOfComments[i][2];
             var idComment = listOfComments[i][6];
@@ -68,4 +81,6 @@
                 dataType: 'json'
         });
     }
+
+
 comments.setUp();
