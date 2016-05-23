@@ -26,6 +26,7 @@ def vote(request):
         elif vote == 'minus':
             c.down_votes += 1
         c.set_lower_bound()
+        c.save()
 
 
 def list_comments(request):
